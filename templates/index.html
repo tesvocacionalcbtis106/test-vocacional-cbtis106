@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Vocacional CBTis 106</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-animation">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+    
+    <div class="container">
+        <div class="card fade-in">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='logo.svg') }}" alt="CBTis 106" class="logo">
+            </div>
+            
+            <div class="header-content">
+                <h1 class="title">Test Vocacional</h1>
+                <p class="subtitle">CBTis 106 - Descubre tu camino profesional</p>
+            </div>
+            
+            <div class="info-section">
+                <p class="intro-text">
+                    ¡Bienvenido! Este test te ayudará a descubrir qué especialidad técnica 
+                    se adapta mejor a tus intereses y habilidades.
+                </p>
+                
+                <div class="features">
+                    <div class="feature-item">
+                        <span class="feature-icon">🎯</span>
+                        <span>105 Preguntas</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">⏱️</span>
+                        <span>20 Minutos</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span>7 Especialidades</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="especialidades-preview">
+                <h2>Especialidades disponibles</h2>
+                <div class="especialidades-grid">
+                    <div class="esp-card">
+                        <span class="esp-icon">💻</span>
+                        <span>Programación</span>
+                    </div>
+                    <div class="esp-card">
+                        <span class="esp-icon">🔒</span>
+                        <span>Ciberseguridad</span>
+                    </div>
+                    <div class="esp-card">
+                        <span class="esp-icon">⚡</span>
+                        <span>Electricidad</span>
+                    </div>
+                    <div class="esp-card">
+                        <span class="esp-icon">🥗</span>
+                        <span>Dietética</span>
+                    </div>
+                    <div class="esp-card">
+                        <span class="esp-icon">👥</span>
+                        <span>Recursos Humanos</span>
+                    </div>
+                    <div class="esp-card">
+                        <span class="esp-icon">🤖</span>
+                        <span>Robótica y Automatización</span>
+                    </div>
+                    <div class="esp-card">
+                        <span class="esp-icon">🌍</span>
+                        <span>Comercio Internacional y Aduanas</span>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="/test" class="btn btn-primary">
+                <span>Iniciar Test</span>
+                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+            </a>
+            
+            <p class="footer-text">
+                Dirigido a estudiantes de 3er año de secundaria
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Estadísticas del Test Vocacional</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+    
+    <div class="container">
+        <div class="card fade-in dashboard-card">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='logo.svg') }}" alt="CBTis 106" class="logo">
+            </div>
+            
+            <div class="header-content">
+                <h1 class="title">📊 Panel de Estadísticas</h1>
+                <p class="subtitle">Test Vocacional CBTis 106 - Dashboard Administrativo</p>
+            </div>
+            
+            <!-- Tarjetas de estadísticas generales -->
+            <div class="stats-grid reveal">
+                <div class="stat-card stat-card-primary">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ total_alumnos }}</span>
+                        <span class="stat-label">Total de Alumnos</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-card-success">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ especialidad_mas_popular }}</span>
+                        <span class="stat-label">Especialidad Más Popular</span>
+                    </div>
+                </div>
+                
+                <!-- CORRECCIÓN: 6 → 7 especialidades -->
+                <div class="stat-card stat-card-warning">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-info">
+                        <span class="stat-number">7</span>
+                        <span class="stat-label">Especialidades</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ranking de especialidades -->
+            <div class="ranking-section reveal">
+                <h3 class="section-title">🥇 Ranking de Especialidades</h3>
+                <p class="section-desc">Especialidades más elegidas por los alumnos (ordenadas)</p>
+                
+                <div class="ranking-table">
+                    <div class="ranking-header-row">
+                        <span class="rank-col">#</span>
+                        <span class="esp-col">Especialidad</span>
+                        <span class="count-col">Alumnos</span>
+                        <span class="bar-col">Distribución</span>
+                    </div>
+                    
+                    <!-- CORRECCIÓN: icon_map actualizado - removido Gestion Empresarial, añadidas 2 nuevas -->
+                    {% set icon_map = {
+                        'Programacion': '💻',
+                        'Ciberseguridad': '🔒',
+                        'Electricidad': '⚡',
+                        'Dietetica': '🥗',
+                        'Recursos Humanos': '👥',
+                        'Robótica_y_Automatización': '🤖',
+                        'Comercio_Internacional_y_Aduanas': '🌍'
+                    } %}
+                    
+                    {% set medal_colors = ['gold', 'silver', 'bronze', 'fourth', 'fifth', 'sixth', 'seventh'] %}
+                    
+                    {% for especialidad, cantidad in ranking %}
+                    <!-- CORRECCIÓN: Bar width dinámica (cantidad / max * 100) -->
+                    {% set max_cantidad = ranking[0][1] if ranking[0][1] > 0 else 1 %}
+                    {% set bar_width = (cantidad / max_cantidad * 100)|round(0) %}
+                    <div class="ranking-row {{ medal_colors[loop.index0] }}">
+                        <span class="rank-col rank-position">
+                            {% if loop.index0 == 0 %}🥇
+                            {% elif loop.index0 == 1 %}🥈
+                            {% elif loop.index0 == 2 %}🥉
+                            {% else %}{{ loop.index }}°
+                            {% endif %}
+                        </span>
+                        <span class="esp-col">
+                            <span class="esp-icon">{{ icon_map.get(especialidad, '📌') }}</span>
+                            {{ especialidad }}
+                        </span>
+                        <span class="count-col">{{ cantidad }}</span>
+                        <span class="bar-col">
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: {{ bar_width }}%"></div>
+                            </div>
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Gráfica de Chart.js -->
+            <div class="chart-section reveal">
+                <h3 class="section-title">📈 Distribución de Especialidades</h3>
+                <p class="section-desc">Visualización gráfica de las preferencias de los alumnos</p>
+                
+                <div class="chart-container">
+                    <canvas id="especialidadesChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Botones de navegación -->
+            <div class="buttons-container">
+                <a href="/" class="btn btn-primary">
+                    <span>🏠</span>
+                    <span>Inicio</span>
+                </a>
+                <a href="/test" class="btn btn-secondary">
+                    <span>📝</span>
+                    <span>Realizar Test</span>
+                </a>
+            </div>
+            
+            <p class="footer-text">
+                CBTis 106 - Centro de Bachillerato Tecnológico industrial y de servicios
+            </p>
+        </div>
+    </div>
+    
+    <script type="application/json" id="chartData">
+{{ {'ranking': ranking} | tojson }}
+    </script>
+    
+    <script>
+        // Lectura de datos desde JSON embebido
+        const chartDataElement = document.getElementById('chartData');
+        const chartData = JSON.parse(chartDataElement.textContent);
+        const especialidades = chartData.ranking;
+        const labels = especialidades.map(item => item[0]);
+        const data = especialidades.map(item => item[1]);
+        
+        // Colores para la gráfica (actualizado para 7 especialidades)
+        const backgroundColors = [
+            'rgba(30, 58, 95, 0.85)',   
+            'rgba(16, 185, 129, 0.85)', 
+            'rgba(245, 158, 11, 0.85)',  
+            'rgba(239, 68, 68, 0.85)',   
+            'rgba(139, 92, 246, 0.85)',  
+            'rgba(236, 72, 153, 0.85)', 
+            'rgba(34, 197, 94, 0.85)'
+        ];
+        
+        const borderColors = [
+            'rgba(30, 58, 95, 1)',
+            'rgba(16, 185, 129, 1)',
+            'rgba(245, 158, 11, 1)',
+            'rgba(239, 68, 68, 1)',
+            'rgba(139, 92, 246, 1)',
+            'rgba(236, 72, 153, 1)',
+            'rgba(34, 197, 94, 1)'
+        ];
+        
+        // Crear gráfica de barras
+        const ctx = document.getElementById('especialidadesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Número de Alumnos',
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.x + ' alumnos';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: {
+                                family: "'Poppins', sans-serif"
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: {
+                                family: "'Poppins', sans-serif",
+                                weight: '500'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Reveal animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(function(el, index) {
+                setTimeout(function() {
+                    el.classList.add('visible');
+                }, index * 200);
+            });
+        });
+    </script>
+    
+    <style>
+        /* Estilos específicos del Dashboard - SIN CAMBIOS */
+        .dashboard-card {
+            max-width: 900px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            border-radius: var(--radius);
+            color: white;
+        }
+        
+        .stat-card-primary {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+        }
+        
+        .stat-card-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        }
+        
+        .stat-card-warning {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+        }
+        
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        /* Ranking Table */
+        .ranking-section {
+            margin-bottom: 30px;
+        }
+        
+        .ranking-table {
+            background: var(--light);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        
+        .ranking-header-row {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .ranking-row {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            transition: var(--transition);
+        }
+        
+        .ranking-row:last-child {
+            border-bottom: none;
+        }
+        
+        .ranking-row:hover {
+            background: #f1f5f9;
+        }
+        
+        .ranking-row.gold {
+            background: linear-gradient(90deg, #fef9c3 0%, #fef08a 100%);
+        }
+        
+        .ranking-row.silver {
+            background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%);
+        }
+        
+        .ranking-row.bronze {
+            background: linear-gradient(90deg, #fef3c7 0%, #fde68a 100%);
+        }
+        
+        .rank-col {
+            width: 60px;
+            text-align: center;
+        }
+        
+        .rank-position {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .esp-col {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+        
+        .esp-icon {
+            font-size: 1.3rem;
+        }
+        
+        .count-col {
+            width: 80px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        
+        .bar-col {
+            width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .progress-bar-container {
+            flex: 1;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50px;
+            transition: width 1s ease;
+        }
+        
+        .percentage {
+            width: 40px;
+            text-align: right;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        /* Chart Section */
+        .chart-section {
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 20px;
+            max-height: 350px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ranking-header-row {
+                display: none;
+            }
+            
+            .ranking-row {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .rank-col, .esp-col, .count-col, .bar-col {
+                width: auto;
+            }
+            
+            .bar-col {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</body>
+</html>
