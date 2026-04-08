@@ -98,19 +98,6 @@
             </div>
             
             <!-- Todos los puntajes -->
-            <div class="all-scores reveal">
-                <h3 class="section-title">📈 Puntajes por Especialidad</h3>
-                <div class="scores-grid">
-                    <!-- CORRECCIÓN: icon_map actualizado con 2 nuevas especialidades -->
-                    {% set icon_map = {
-                        'Programacion': '💻',
-                        'Ciberseguridad': '🔒',
-                        'Electricidad': '⚡',
-                        'Dietetica': '🥗',
-                        'Recursos Humanos': '👥',
-                        'Robótica_y_Automatización': '🤖',
-                        'Comercio_Internacional_y_Aduanas': '🌍'
-                    } %}
                     
                     {% for esp, puntos in puntajes.items() %}
                     <!-- CORRECCIÓN: /25 → /75 -->
