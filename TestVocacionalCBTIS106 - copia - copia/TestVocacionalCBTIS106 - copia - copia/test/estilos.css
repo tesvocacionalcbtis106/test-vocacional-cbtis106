@@ -1,0 +1,224 @@
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ===== BODY ===== */
+body {
+    background: #f2f5f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* ===== CARD ===== */
+.card {
+    background: white;
+    padding: 40px;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+    animation: fadeIn 0.45s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== TITLES ===== */
+.title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f4c81;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+/* ===== LABELS ===== */
+label {
+    display: block;
+    text-align: left;
+    margin-bottom: 6px;
+    font-size: 15px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* ===== INPUTS ===== */
+.input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccd3da;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 20px;
+    transition: all 0.25s ease;
+}
+
+.input:focus {
+    border-color: #0f4c81;
+    box-shadow: 0 0 6px rgba(15, 76, 129, 0.25);
+    outline: none;
+}
+
+/* ===== BOTONES GENERALES ===== */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    font-size: 17px;
+    font-weight: 700;
+    border-radius: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+/* — Azul estilo Amazon — */
+.btn-primary {
+    background: #146eb4;
+    color: white;
+    border-color: #0f4c81;
+}
+
+.btn-primary:hover {
+    background: #0f4c81;
+}
+
+/* — Gris premium — */
+.btn-back {
+    background: #d5d9d9;
+    color: #111;
+    border-color: #bfc4c4;
+}
+
+.btn-back:hover {
+    background: #bfc4c4;
+}
+
+/* ===== SECCIONES EN RESULTADOS ===== */
+.section {
+    margin-bottom: 25px;
+}
+
+/* Subtítulo dentro de los resultados */
+.section-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f4c81;
+    margin-bottom: 10px;
+}
+
+/* Texto genérico centrado */
+.text {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* ===== RESULTADOS (cajas) ===== */
+.box {
+    background: #f9fafb;
+    border: 1px solid #e3e6e6;
+    padding: 22px;
+    border-radius: 14px;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+/* Lista de universidades */
+.list,
+.uni-list {
+    margin-left: 15px;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.link,
+.uni-list a {
+    color: #146eb4;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.link:hover,
+.uni-list a:hover {
+    text-decoration: underline;
+}
+
+/* ==== Top 3 ==== */
+.top3-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.top-card {
+    flex: 1;
+    background: #e9f2ff;
+    padding: 15px;
+    text-align: center;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    border: 1px solid #c7daf5;
+    color: #0f3f7e;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
+    min-width: 150px;
+}
+
+/* Correo */
+.email-notice {
+    background: #eef2f5;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    text-align: center;
+}
+
+/* LOGO CBTis */
+.logo {
+    width: 120px;
+    display: block;
+    margin: 0 auto 15px auto;
+    opacity: 0.95;
+    filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.2));
+}
+
+/* Para pantallas pequeñas */
+@media (max-width: 450px) {
+    .title {
+        font-size: 22px;
+    }
+    .card {
+        padding: 25px;
+    }
+}

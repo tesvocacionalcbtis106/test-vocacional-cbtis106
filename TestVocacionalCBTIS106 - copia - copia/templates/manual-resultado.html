@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respuestas - Test Vocacional CBTis 106</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-animation">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+    
+    <div class="container">
+        <div class="card fade-in">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='logo.svg') }}" alt="CBTis 106" class="logo">
+            </div>
+            
+            <div class="header-content">
+                <h1 class="title">📊 Resultados del Test</h1>
+                <p class="subtitle">Test Vocacional CBTis 106</p>
+            </div>
+            
+            <div class="result-header">
+                <p class="student-name">{{ nombre }}</p>
+                <p class="student-email">{{ edad }} años | {{ correo }}</p>
+            </div>
+            
+            <!-- Carrera Principal -->
+            <div class="principal-career reveal">
+                <div class="career-badge">
+                    <span class="badge-icon">🎓</span>
+                    <span class="badge-text">Carrera Principal Recomendada</span>
+                </div>
+                <h2 class="career-name">{{ carrera_principal }}</h2>
+            </div>
+
+            <!-- TOP 3 Especialidades - Diseño Mejorado -->
+            <div class="top3-simple reveal">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-size: 28px; color: #1e40af; margin-bottom: 10px;">🏆 Top 3 Especialidades Recomendadas</h2>
+                    <p style="color: #64748b; font-size: 14px;">Basado en tus resultados del test vocacional</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    {% for esp, puntos in top3 %}
+                    {% set medals = ['🥇', '🥈', '🥉'] %}
+                    {% set colors = ['#fbbf24', '#d1d5db', '#f97316'] %}
+                    {% set bg_colors = ['#fffbeb', '#f9fafb', '#fff7ed'] %}
+                    <div style="background: {{ bg_colors[loop.index0] }}; border: 2px solid {{ colors[loop.index0] }}; border-radius: 12px; padding: 25px; text-align: center; transition: transform 0.3s; cursor: pointer;">
+                        <div style="font-size: 48px; margin-bottom: 12px;">{{ medals[loop.index0] }}</div>
+                        <div style="font-size: 18px; font-weight: 600; color: #1e40af; margin-bottom: 8px;">{{ loop.index }}º Lugar</div>
+                        <h3 style="font-size: 20px; font-weight: 700; color: #1e3a8a; margin: 12px 0; text-transform: capitalize;">{{ esp }}</h3>
+                        <div style="background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin: 15px 0;">
+                            <div style="background: linear-gradient(to right, #3b82f6, #1e40af); height: 100%; width: {{ (puntos / 75 * 100)|round(0) }}%; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 16px; font-weight: 600; color: #1e40af;">{{ puntos }}/75 puntos</div>
+                        <div style="font-size: 13px; color: #64748b; margin-top: 8px;">{{ ((puntos / 75 * 100)|round(0))|int }}% de afinidad</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Top 3 Especialidades -->
+            <div class="top3-section reveal">
+                <h3 class="section-title">🏆 Top 3 Recomendaciones</h3>
+                <div class="top3-container">
+                    {% set medals = ['🥇', '🥈', '🥉'] %}
+                    <!-- CORRECCIÓN: Porcentajes dinámicos (puntajes[esp] / 75 * 100) -->
+                    {% if top3 %}
+                        {% for esp in top3 %}
+                        {% set puntos = puntajes.get(esp, 0) %}
+                        {% set porcentaje = (puntos / 75.0 * 100)|round(0) %}
+                        <div class="top3-item {% if loop.index0 == 0 %}gold{% elif loop.index0 == 1 %}silver{% else %}bronze{% endif %}">
+                            <div class="medal">{{ medals[loop.index0] }}</div>
+                            <div class="top3-content">
+                                <span class="top3-rank">{{ loop.index }}º Lugar</span>
+                                <span class="top3-career">{{ esp }}</span>
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width: {{ porcentaje }}%"></div>
+                                </div>
+                                <span class="score-text">{{ puntos }}/75 puntos</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="text-align: center; color: #64748b;">Sin datos disponibles</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Puntajes por Especialidad -->
+            <div class="all-scores reveal">
+                <h3 class="section-title">📈 Puntajes por Especialidad</h3>
+                <div class="scores-grid">
+                    {% set icon_map = {
+                        'Programacion': '💻',
+                        'Ciberseguridad': '🔒',
+                        'Electricidad': '⚡',
+                        'Dietetica': '🥗',
+                        'Recursos Humanos': '👥',
+                        'Robótica_y_Automatización': '🤖',
+                        'Comercio_Internacional_y_Aduanas': '🌍'
+                    } %}
+                    
+                    {% for esp, puntos in puntajes.items() %}
+                    <!-- CORRECCIÓN: Porcentaje dinámico en todas las barras -->
+                    {% set percentage = (puntos / 75.0 * 100)|round(0) %}
+                    <div class="score-card {% if esp == carrera_principal %}highlight{% endif %}">
+                        <div class="score-icon">
+                            {{ icon_map.get(esp, '📌') }}
+                        </div>
+                        <div class="score-info">
+                            <span class="score-name">{{ esp }}</span>
+                            <div class="score-progress">
+                                <div class="score-progress-fill" style="width: {{ percentage }}%"></div>
+                            </div>
+                            <span class="score-value">{{ puntos }}/75</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Mensaje motivador -->
+            <div class="advisor-section reveal">
+                <h3 class="section-title">💬 Mensaje de Orientación</h3>
+                <div class="advisor-card">
+                    {% if MENSAJES_MOTIVADORES and carrera_principal in MENSAJES_MOTIVADORES %}
+                        <!-- CORRECCIÓN: Ya usa MENSAJES_MOTIVADORES correctamente -->
+                        <p>{{ MENSAJES_MOTIVADORES[carrera_principal] }}</p>
+                    {% else %}
+                        <p>¡Felicidades por completar el test vocacional! Tu dedicación en explorar tus opciones de carrera es el primer paso hacia el éxito profesional. Esperamos que las recomendaciones te ayuden a tomar la mejor decisión para tu futuro.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Confirmación de Registro -->
+            <div class="email-notice">
+                <span class="email-icon">📧</span>
+                <span>Registro completado: <strong>{{ correo }}</strong></span>
+            </div>
+            
+            <div class="buttons-container">
+                <a href="/test" class="btn btn-primary">
+                    <span>🔄</span> Repetir Test
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    <span>🏠</span> Inicio
+                </a>
+            </div>
+            
+            <p class="footer-text">
+                CBTIS 106 - Centro de Bachillerato Tecnológico industrial y de servicios
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Simple animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(function(el, index) {
+                setTimeout(function() {
+                    el.classList.add('visible');
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
