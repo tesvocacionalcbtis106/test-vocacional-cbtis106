@@ -1,6 +1,7 @@
 const STORAGE_KEY = 'cbtis106_test_responses';
 const PERSONAL_DATA_KEY = 'cbtis106_personal_data';
 const RECORDS_KEY = 'cbtis106_registros';
+const LAST_RESULT_KEY = 'cbtis106_last_result';
 
 const categorias = [
   { key: 'Dietetica', emoji: '🥗', nombre: 'Dietética' },
@@ -191,6 +192,34 @@ function renderResultados({ nombre, edad, correo, puntajes, top3, carreraPrincip
   `).join('');
 }
 
+
+function enviarResultado() {
+  const correoInput = document.getElementById('correo');
+  const correo = correoInput?.value?.trim();
+
+  if (!correo) {
+    alert('⚠️ Ingresa un correo válido para enviar el resultado.');
+    showScreen('test');
+    correoInput?.focus();
+    return;
+  }
+
+  const lastResult = loadJSON(LAST_RESULT_KEY, null);
+  const resultado = lastResult?.carreraPrincipal || document.getElementById('careerName').textContent.trim();
+
+  if (!resultado) {
+    alert('⚠️ No se encontró un resultado para enviar.');
+    return;
+  }
+
+  const subject = encodeURIComponent('Resultado de tu Test Vocacional CBTIS 106');
+  const body = encodeURIComponent(
+    `Hola 👋\n\nGracias por realizar el test vocacional.\n\n📊 Tu resultado fue:\n👉 ${resultado}\n\n¡Mucho éxito en tu futuro!`
+  );
+
+  window.location.href = `mailto:${encodeURIComponent(correo)}?subject=${subject}&body=${body}`;
+}
+
 function collectRespuestas() {
   const respuestas = {};
   for (let i = 1; i <= totalQuestions; i += 1) {
@@ -256,6 +285,11 @@ async function init() {
     const registros = loadJSON(RECORDS_KEY, []);
     registros.push(record);
     saveJSON(RECORDS_KEY, registros);
+    saveJSON(LAST_RESULT_KEY, {
+      carreraPrincipal: record.carreraPrincipal,
+      correo: record.correo,
+      fechaISO: record.fechaISO
+    });
 
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(PERSONAL_DATA_KEY);
@@ -267,6 +301,7 @@ async function init() {
 
 document.getElementById('startBtn').addEventListener('click', () => showScreen('test'));
 document.getElementById('backHomeBtn').addEventListener('click', () => showScreen('home'));
+document.getElementById('sendResultBtn').addEventListener('click', enviarResultado);
 document.getElementById('toHomeBtn').addEventListener('click', () => showScreen('home'));
 document.getElementById('retryBtn').addEventListener('click', () => {
   form.reset();
