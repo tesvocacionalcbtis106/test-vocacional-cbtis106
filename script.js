@@ -220,6 +220,7 @@ ${todosLosResultados}
 }
 
 function enviarResultado(recordData = null) {
+function enviarResultado() {
   const correoInput = document.getElementById('correo');
   const correo = correoInput?.value?.trim();
 
@@ -234,6 +235,10 @@ function enviarResultado(recordData = null) {
   const resultadoFallback = document.getElementById('careerName').textContent.trim();
 
   if (!lastResult && !resultadoFallback) {
+  const lastResult = loadJSON(LAST_RESULT_KEY, null);
+  const resultado = lastResult?.carreraPrincipal || document.getElementById('careerName').textContent.trim();
+
+  if (!resultado) {
     alert('⚠️ No se encontró un resultado para enviar.');
     return;
   }
