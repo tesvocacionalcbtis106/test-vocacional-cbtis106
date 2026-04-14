@@ -22,6 +22,7 @@ Luego abre:
 - http://localhost:5500/
 
 > Puedes abrirlo con servidor estático recomendado. Además, la app incluye respaldo embebido de preguntas para seguir funcionando incluso si `fetch` falla en algunos navegadores.
+> Nota: No abras el HTML con `file://` porque `fetch('preguntas.json')` puede bloquearse por seguridad del navegador.
 
 ## 🧠 Qué conserva esta versión
 

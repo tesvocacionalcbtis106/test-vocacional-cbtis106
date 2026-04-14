@@ -2,6 +2,7 @@ const STORAGE_KEY = 'cbtis106_test_responses';
 const PERSONAL_DATA_KEY = 'cbtis106_personal_data';
 const RECORDS_KEY = 'cbtis106_registros';
 const EMBEDDED_QUESTIONS = {"Dietetica": ["Me interesa aprender cómo la alimentación influye en la salud de las personas.", "Me gusta investigar sobre vitaminas, nutrientes y dietas saludables.", "Disfruto preparar alimentos saludables o experimentar con recetas nutritivas.", "Me gustaría ayudar a personas a mejorar su alimentación.", "Me interesa saber cómo prevenir enfermedades a través de la alimentación.", "Me gusta aprender sobre el funcionamiento del cuerpo humano.", "Me interesa conocer cómo afectan los alimentos al rendimiento físico o mental.", "Me gustaría trabajar en hospitales, clínicas o centros de salud.", "Me interesa calcular calorías y requerimientos nutricionales.", "Me gusta orientar a otras personas sobre hábitos saludables.", "Me interesa la relación entre alimentación y deporte.", "Me gustaría diseñar planes de alimentación para diferentes personas.", "Me gusta leer o investigar sobre nutrición.", "Me interesa la higiene y manejo adecuado de los alimentos.", "Me gustaría trabajar promoviendo estilos de vida saludables."], "Programacion": ["Me gusta resolver problemas utilizando lógica o pasos ordenados.", "Me interesa aprender a crear aplicaciones o programas de computadora.", "Disfruto investigar cómo funcionan las páginas web o aplicaciones.", "Me gusta pasar tiempo usando computadoras para crear cosas nuevas.", "Me interesa aprender lenguajes de programación.", "Me gusta analizar problemas hasta encontrar una solución.", "Me gustaría desarrollar videojuegos o aplicaciones móviles.", "Me interesa automatizar tareas usando tecnología.", "Disfruto aprender nuevas herramientas digitales.", "Me gusta trabajar con datos e información digital.", "Me interesa saber cómo funcionan los sistemas informáticos.", "Me gusta pensar de manera lógica y estructurada.", "Me gustaría trabajar desarrollando software.", "Me gusta aprender cosas nuevas relacionadas con tecnología.", "Me siento cómodo trabajando muchas horas frente a la computadora."], "Ciberseguridad": ["Me interesa saber cómo proteger información en internet.", "Me gusta investigar cómo funcionan los sistemas de seguridad digital.", "Me interesa aprender cómo evitar fraudes o ataques informáticos.", "Disfruto resolver problemas tecnológicos complejos.", "Me interesa analizar riesgos y vulnerabilidades en sistemas.", "Me gustaría aprender a detectar intentos de hackeo.", "Me interesa la seguridad de redes y sistemas informáticos.", "Me gusta investigar cómo funcionan los virus o malware.", "Me gustaría proteger información importante de empresas u organizaciones.", "Me interesa aprender sobre privacidad digital.", "Me gusta analizar situaciones para encontrar fallas o debilidades.", "Me interesa trabajar con tecnología avanzada.", "Me gustaría participar en la protección de datos e información.", "Me interesa aprender sobre redes de computadoras.", "Me gusta resolver retos tecnológicos relacionados con seguridad."], "Electricidad": ["Me gusta entender cómo funciona la electricidad en casas o edificios.", "Me interesa instalar o reparar aparatos eléctricos.", "Me gusta trabajar con herramientas y equipos técnicos.", "Me interesa saber cómo se distribuye la energía eléctrica.", "Me gusta resolver problemas técnicos en equipos eléctricos.", "Me interesa aprender a leer diagramas eléctricos.", "Me gustaría instalar sistemas eléctricos en casas o industrias.", "Me gusta construir o armar dispositivos eléctricos.", "Me interesa aprender normas de seguridad eléctrica.", "Me gusta entender cómo funcionan motores eléctricos.", "Me interesa trabajar en proyectos de energía.", "Me gusta aprender cómo funcionan las instalaciones eléctricas.", "Me gustaría trabajar en mantenimiento eléctrico.", "Me interesa la tecnología relacionada con energía.", "Me gusta realizar trabajos prácticos y técnicos."], "Robótica_y_Automatización": ["Me interesa aprender cómo funcionan los robots.", "Me gusta armar o construir dispositivos tecnológicos.", "Me interesa programar máquinas para que realicen tareas automáticamente.", "Me gusta participar en proyectos tecnológicos o de innovación.", "Me interesa aprender sobre sensores y motores.", "Me gustaría diseñar robots para resolver problemas.", "Me gusta experimentar con tecnología nueva.", "Me interesa la automatización de procesos industriales.", "Me gusta combinar programación con hardware.", "Me gustaría participar en competencias de robótica.", "Me interesa entender cómo funcionan las máquinas inteligentes.", "Me gusta trabajar en proyectos tecnológicos en equipo.", "Me interesa la inteligencia artificial aplicada a máquinas.", "Me gusta construir prototipos o inventos tecnológicos.", "Me gustaría trabajar desarrollando tecnología avanzada."], "Recursos_Humanos": ["Me gusta escuchar y ayudar a las personas a resolver problemas.", "Me interesa trabajar organizando equipos de trabajo.", "Me gusta aprender sobre liderazgo y motivación.", "Me interesa mejorar el ambiente laboral en las organizaciones.", "Me gusta mediar en conflictos entre personas.", "Me interesa aprender cómo se selecciona personal para una empresa.", "Me gustaría ayudar a las personas a desarrollar sus habilidades.", "Me interesa la capacitación y formación de trabajadores.", "Me gusta trabajar con personas más que con máquinas.", "Me interesa entender el comportamiento humano en el trabajo.", "Me gusta coordinar actividades y grupos.", "Me interesa promover valores y cultura organizacional.", "Me gustaría trabajar en el área administrativa de una empresa.", "Me interesa mejorar la comunicación entre personas.", "Me gusta apoyar el desarrollo profesional de otros."], "Comercio_Internacional_y_Aduanas": ["Me interesa conocer cómo se comercian productos entre países.", "Me gusta aprender sobre importación y exportación de mercancías.", "Me interesa conocer las leyes y regulaciones del comercio internacional.", "Me gustaría trabajar en aduanas o empresas de comercio exterior.", "Me interesa aprender sobre logística y transporte internacional.", "Me gusta conocer mercados de otros países.", "Me interesa negociar productos o servicios.", "Me gustaría trabajar en empresas que exportan productos.", "Me interesa aprender sobre tratados comerciales entre países.", "Me gusta investigar cómo se mueven los productos en el mundo.", "Me interesa aprender sobre trámites aduanales.", "Me gustaría trabajar en puertos, aeropuertos o fronteras comerciales.", "Me interesa la economía internacional.", "Me gusta aprender sobre negocios internacionales.", "Me interesa trabajar en empresas globales."]};
+const LAST_RESULT_KEY = 'cbtis106_last_result';
 
 const categorias = [
   { key: 'Dietetica', emoji: '🥗', nombre: 'Dietética' },
@@ -193,6 +194,68 @@ function renderResultados({ nombre, edad, correo, puntajes, top3, carreraPrincip
 }
 
 
+function construirMensajeCorreo(record) {
+  const top3Texto = record.top3
+    .map(([esp, puntos], i) => `${i + 1}. ${esp} — ${puntos}/75 (${Math.round((puntos / 75) * 100)}%)`)
+    .join('\n');
+
+  const todosLosResultados = Object.entries(record.puntajes)
+    .sort((a, b) => b[1] - a[1])
+    .map(([esp, puntos]) => `• ${esp}: ${puntos}/75 (${Math.round((puntos / 75) * 100)}%)`)
+    .join('\n');
+
+  return `Hola 👋
+
+Gracias por realizar el test vocacional.
+
+📊 Tu resultado fue:
+👉 ${record.carreraPrincipal}
+
+🏆 Top 3 recomendaciones:
+${top3Texto}
+
+📈 Todos tus resultados:
+${todosLosResultados}
+
+¡Mucho éxito en tu futuro!`;
+}
+
+function enviarResultado(recordData = null) {
+function enviarResultado() {
+  const correoInput = document.getElementById('correo');
+  const correo = correoInput?.value?.trim();
+
+  if (!correo) {
+    alert('⚠️ Ingresa un correo válido para enviar el resultado.');
+    showScreen('test');
+    correoInput?.focus();
+    return;
+  }
+
+  const lastResult = recordData || loadJSON(LAST_RESULT_KEY, null);
+  const resultadoFallback = document.getElementById('careerName').textContent.trim();
+
+  if (!lastResult && !resultadoFallback) {
+  const lastResult = loadJSON(LAST_RESULT_KEY, null);
+  const resultado = lastResult?.carreraPrincipal || document.getElementById('careerName').textContent.trim();
+
+  if (!resultado) {
+    alert('⚠️ No se encontró un resultado para enviar.');
+    return;
+  }
+
+  const record = lastResult || {
+    carreraPrincipal: resultadoFallback,
+    top3: [[resultadoFallback, 0]],
+    puntajes: { [resultadoFallback]: 0 }
+  };
+
+  const subject = encodeURIComponent('Resultado de tu Test Vocacional CBTIS 106');
+  const body = encodeURIComponent(construirMensajeCorreo(record));
+
+  window.location.href = `mailto:${encodeURIComponent(correo)}?subject=${subject}&body=${body}`;
+}
+
 function collectRespuestas() {
   const respuestas = {};
   for (let i = 1; i <= totalQuestions; i += 1) {
@@ -230,6 +293,18 @@ async function init() {
   restoreSavedData();
   updateProgress();
 
+  try {
+    const response = await fetch('preguntas.json');
+    const preguntas = await response.json();
+    buildQuestions(preguntas);
+    restoreSavedData();
+    updateProgress();
+  } catch (error) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'No se pudieron cargar preguntas';
+    questionsRoot.innerHTML = '<p style="color:#ef4444;font-weight:600;">Error al cargar preguntas.json. Usa un servidor estático (por ejemplo <code>python3 -m http.server 5500</code>) para abrir el proyecto.</p>';
+  }
+
   form.addEventListener('change', () => {
     saveProgress();
     updateProgress();
@@ -266,17 +341,24 @@ async function init() {
     const registros = loadJSON(RECORDS_KEY, []);
     registros.push(record);
     saveJSON(RECORDS_KEY, registros);
+    saveJSON(LAST_RESULT_KEY, {
+      carreraPrincipal: record.carreraPrincipal,
+      correo: record.correo,
+      fechaISO: record.fechaISO
+    });
 
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(PERSONAL_DATA_KEY);
 
     renderResultados(record);
     showScreen('result');
+    enviarResultado(record);
   });
 }
 
 document.getElementById('startBtn').addEventListener('click', () => showScreen('test'));
 document.getElementById('backHomeBtn').addEventListener('click', () => showScreen('home'));
+document.getElementById('sendResultBtn').addEventListener('click', enviarResultado);
 document.getElementById('toHomeBtn').addEventListener('click', () => showScreen('home'));
 document.getElementById('retryBtn').addEventListener('click', () => {
   form.reset();
