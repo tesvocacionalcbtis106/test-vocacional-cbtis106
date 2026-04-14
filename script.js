@@ -1,6 +1,7 @@
 const STORAGE_KEY = 'cbtis106_test_responses';
 const PERSONAL_DATA_KEY = 'cbtis106_personal_data';
 const RECORDS_KEY = 'cbtis106_registros';
+const LAST_RESULT_KEY = 'cbtis106_last_result';
 
 const categorias = [
   { key: 'Dietetica', emoji: '🥗', nombre: 'Dietética' },
@@ -192,6 +193,68 @@ function renderResultados({ nombre, edad, correo, puntajes, top3, carreraPrincip
 }
 
 
+function construirMensajeCorreo(record) {
+  const top3Texto = record.top3
+    .map(([esp, puntos], i) => `${i + 1}. ${esp} — ${puntos}/75 (${Math.round((puntos / 75) * 100)}%)`)
+    .join('\n');
+
+  const todosLosResultados = Object.entries(record.puntajes)
+    .sort((a, b) => b[1] - a[1])
+    .map(([esp, puntos]) => `• ${esp}: ${puntos}/75 (${Math.round((puntos / 75) * 100)}%)`)
+    .join('\n');
+
+  return `Hola 👋
+
+Gracias por realizar el test vocacional.
+
+📊 Tu resultado fue:
+👉 ${record.carreraPrincipal}
+
+🏆 Top 3 recomendaciones:
+${top3Texto}
+
+📈 Todos tus resultados:
+${todosLosResultados}
+
+¡Mucho éxito en tu futuro!`;
+}
+
+function enviarResultado(recordData = null) {
+function enviarResultado() {
+  const correoInput = document.getElementById('correo');
+  const correo = correoInput?.value?.trim();
+
+  if (!correo) {
+    alert('⚠️ Ingresa un correo válido para enviar el resultado.');
+    showScreen('test');
+    correoInput?.focus();
+    return;
+  }
+
+  const lastResult = recordData || loadJSON(LAST_RESULT_KEY, null);
+  const resultadoFallback = document.getElementById('careerName').textContent.trim();
+
+  if (!lastResult && !resultadoFallback) {
+  const lastResult = loadJSON(LAST_RESULT_KEY, null);
+  const resultado = lastResult?.carreraPrincipal || document.getElementById('careerName').textContent.trim();
+
+  if (!resultado) {
+    alert('⚠️ No se encontró un resultado para enviar.');
+    return;
+  }
+
+  const record = lastResult || {
+    carreraPrincipal: resultadoFallback,
+    top3: [[resultadoFallback, 0]],
+    puntajes: { [resultadoFallback]: 0 }
+  };
+
+  const subject = encodeURIComponent('Resultado de tu Test Vocacional CBTIS 106');
+  const body = encodeURIComponent(construirMensajeCorreo(record));
+
+  window.location.href = `mailto:${encodeURIComponent(correo)}?subject=${subject}&body=${body}`;
+}
+
 function collectRespuestas() {
   const respuestas = {};
   for (let i = 1; i <= totalQuestions; i += 1) {
@@ -257,17 +320,24 @@ async function init() {
     const registros = loadJSON(RECORDS_KEY, []);
     registros.push(record);
     saveJSON(RECORDS_KEY, registros);
+    saveJSON(LAST_RESULT_KEY, {
+      carreraPrincipal: record.carreraPrincipal,
+      correo: record.correo,
+      fechaISO: record.fechaISO
+    });
 
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(PERSONAL_DATA_KEY);
 
     renderResultados(record);
     showScreen('result');
+    enviarResultado(record);
   });
 }
 
 document.getElementById('startBtn').addEventListener('click', () => showScreen('test'));
 document.getElementById('backHomeBtn').addEventListener('click', () => showScreen('home'));
+document.getElementById('sendResultBtn').addEventListener('click', enviarResultado);
 document.getElementById('toHomeBtn').addEventListener('click', () => showScreen('home'));
 document.getElementById('retryBtn').addEventListener('click', () => {
   form.reset();
