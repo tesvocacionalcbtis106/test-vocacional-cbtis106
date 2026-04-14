@@ -2,6 +2,9 @@ const STORAGE_KEY = 'cbtis106_test_responses';
 const PERSONAL_DATA_KEY = 'cbtis106_personal_data';
 const RECORDS_KEY = 'cbtis106_registros';
 const LAST_RESULT_KEY = 'cbtis106_last_result';
+const EMAILJS_PUBLIC_KEY = 'TU_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID = 'TU_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'TU_TEMPLATE_ID';
 
 const categorias = [
   { key: 'Dietetica', emoji: '🥗', nombre: 'Dietética' },
@@ -36,6 +39,7 @@ const screens = {
 };
 
 let totalQuestions = 0;
+let emailjsReady = false;
 
 function showScreen(screenName) {
   Object.values(screens).forEach((el) => el.classList.remove('active'));
@@ -192,6 +196,44 @@ function renderResultados({ nombre, edad, correo, puntajes, top3, carreraPrincip
   `).join('');
 }
 
+function initEmailJS() {
+  if (typeof emailjs === 'undefined') {
+    console.warn('EmailJS no está cargado. Verifica el script CDN en index.html.');
+    return;
+  }
+
+  if (EMAILJS_PUBLIC_KEY === 'TU_PUBLIC_KEY') {
+    console.warn('Configura tu EMAILJS_PUBLIC_KEY en script.js para habilitar el envío automático.');
+    return;
+  }
+
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  emailjsReady = true;
+}
+
+function enviarCorreoAutomatico(record) {
+  if (!emailjsReady) {
+    console.warn('EmailJS no está inicializado. No se envió el correo automático.');
+    return;
+  }
+
+  if (EMAILJS_SERVICE_ID === 'TU_SERVICE_ID' || EMAILJS_TEMPLATE_ID === 'TU_TEMPLATE_ID') {
+    console.warn('Configura EMAILJS_SERVICE_ID y EMAILJS_TEMPLATE_ID en script.js.');
+    return;
+  }
+
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    nombre: record.nombre,
+    resultado: record.carreraPrincipal,
+    top1: record.top3?.[0]?.[0] || '',
+    top2: record.top3?.[1]?.[0] || '',
+    top3: record.top3?.[2]?.[0] || '',
+    to_email: record.correo
+  }).catch((error) => {
+    console.error('Error al enviar correo automático:', error);
+  });
+}
+
 
 function enviarResultado() {
   const correoInput = document.getElementById('correo');
@@ -237,6 +279,8 @@ function validateComplete() {
 }
 
 async function init() {
+  initEmailJS();
+
   try {
     const response = await fetch('preguntas.json');
     const preguntas = await response.json();
@@ -295,6 +339,7 @@ async function init() {
     localStorage.removeItem(PERSONAL_DATA_KEY);
 
     renderResultados(record);
+    enviarCorreoAutomatico(record);
     showScreen('result');
   });
 }
