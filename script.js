@@ -192,6 +192,24 @@ function renderResultados({ nombre, edad, correo, puntajes, top3, carreraPrincip
   `).join('');
 }
 
+function enviarCorreoAutomatico(record) {
+  if (typeof emailjs === 'undefined') {
+    console.warn('EmailJS no está disponible. No se envió el correo automático.');
+    return;
+  }
+
+  emailjs.send('TU_SERVICE_ID', 'TU_TEMPLATE_ID', {
+    nombre: record.nombre,
+    resultado: record.carreraPrincipal,
+    top1: record.top3?.[0]?.[0] || '',
+    top2: record.top3?.[1]?.[0] || '',
+    top3: record.top3?.[2]?.[0] || '',
+    to_email: record.correo
+  }).catch((error) => {
+    console.error('Error al enviar correo automático:', error);
+  });
+}
+
 
 function enviarResultado() {
   const correoInput = document.getElementById('correo');
@@ -295,6 +313,7 @@ async function init() {
     localStorage.removeItem(PERSONAL_DATA_KEY);
 
     renderResultados(record);
+    enviarCorreoAutomatico(record);
     showScreen('result');
   });
 }
