@@ -1,5 +1,5 @@
-# Test Vocacional CBTis 106 - Dependencias
 flask>=2.3.0
 python-dotenv>=0.21.0
 markupsafe>=2.1.0
 Werkzeug>=2.3.0
+gunicorn>=21.2.0
