@@ -16,9 +16,9 @@ const PERSONAL_DATA_KEY = 'cbtis106_personal_data';
 const RECORDS_KEY      = 'cbtis106_registros';
 const LAST_RESULT_KEY  = 'cbtis106_last_result';
 const MAX_RECORDS      = 50;   // Máximo de registros guardados en localStorage
-const QUESTIONS_PER_AREA = 15; // Preguntas por especialidad
+const QUESTIONS_PER_AREA = 5; // Preguntas por especialidad
 const MAX_VALUE_PER_Q  = 5;    // Valor máximo por pregunta (escala 1–5)
-const MAX_SCORE        = QUESTIONS_PER_AREA * MAX_VALUE_PER_Q; // 75
+const MAX_SCORE        = QUESTIONS_PER_AREA * MAX_VALUE_PER_Q; // 25
 
 // ─── DEFINICIÓN DE CATEGORÍAS (fuente única de verdad) ───────────────────────
 // Cada objeto contiene la clave del JSON, el emoji y el nombre a mostrar.
@@ -28,7 +28,7 @@ const categorias = [
   { key: 'Programacion',                      emoji: '💻', nombre: 'Programación' },
   { key: 'Ciberseguridad',                    emoji: '🔒', nombre: 'Ciberseguridad' },
   { key: 'Electricidad',                      emoji: '⚡', nombre: 'Electricidad' },
-  { key: 'Robótica_y_Automatización',         emoji: '🤖', nombre: 'Robótica y Automatización' },
+  { key: 'Robotica_y_Automatizacion',         emoji: '🤖', nombre: 'Robótica y Automatización' },
   { key: 'Recursos_Humanos',                  emoji: '👥', nombre: 'Recursos Humanos' },
   { key: 'Comercio_Internacional_y_Aduanas',  emoji: '🌍', nombre: 'Comercio Internacional y Aduanas' },
 ];
