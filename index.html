@@ -7,8 +7,7 @@
   <title>Test Vocacional CBTis 106</title>
   <link rel="stylesheet" href="static/estilos.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- EmailJS SDK — requerido para envío de correos automáticos -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 </head>
 <body>
 
@@ -87,12 +86,7 @@
                        class="input-field" placeholder="10–25">
               </div>
             </div>
-            <div class="form-group">
-              <label for="correo">Correo electrónico <span class="required" aria-hidden="true">*</span></label>
-              <input type="email" id="correo" name="correo" required
-                     autocomplete="email" class="input-field"
-                     placeholder="ejemplo@correo.com">
-            </div>
+
           </div>
 
           <div id="questionsRoot"></div>
@@ -143,11 +137,7 @@
           <div class="scores-grid" id="scoresGrid"></div>
         </div>
 
-        <!-- Aviso de correo (visible solo si EmailJS está configurado) -->
-        <div id="emailNotice" class="email-notice" style="display:none">
-          <span class="email-icon">✉️</span>
-          <span id="emailNoticeText"></span>
-        </div>
+
 
         <div class="buttons-container">
           <button id="retryBtn" class="btn btn-primary"><span>🔄</span> Repetir Test</button>

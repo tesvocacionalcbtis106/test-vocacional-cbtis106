@@ -140,7 +140,7 @@ function restoreSavedData() {
   const personal = loadJSON(PERSONAL_DATA_KEY, {});
   if (form.nombre) form.nombre.value = personal.nombre || '';
   if (form.edad)   form.edad.value   = personal.edad   || '';
-  if (form.correo) form.correo.value = personal.correo || '';
+
 }
 
 function saveProgress() {
@@ -153,7 +153,7 @@ function saveProgress() {
   saveJSON(PERSONAL_DATA_KEY, {
     nombre: form.nombre?.value || '',
     edad:   form.edad?.value   || '',
-    correo: form.correo?.value || '',
+
   });
 }
 
@@ -224,7 +224,7 @@ function calcularPuntajes(respuestas) {
 // ─── RENDERIZADO DE RESULTADOS ───────────────────────────────────────────────
 function renderResultados({ nombre, edad, correo, puntajes, top3, carreraPrincipal }) {
   document.getElementById('studentName').textContent = nombre;
-  document.getElementById('studentMeta').textContent = `${edad} años | ${correo}`;
+  document.getElementById('studentMeta').textContent = edad ? `${edad} años` : '';
   document.getElementById('careerName').textContent  = carreraPrincipal;
 
   const medals = ['🥇', '🥈', '🥉'];
@@ -253,50 +253,7 @@ function renderResultados({ nombre, edad, correo, puntajes, top3, carreraPrincip
 }
 
 // ─── EMAILJS ─────────────────────────────────────────────────────────────────
-function emailJsConfigurado() {
-  return EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.serviceId && EMAILJS_CONFIG.templateId;
-}
 
-function initEmailJS() {
-  if (typeof emailjs !== 'undefined' && emailJsConfigurado()) {
-    emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
-  }
-}
-
-function mostrarAvisoCorreo(texto, exito = true) {
-  const aviso = document.getElementById('emailNotice');
-  const span  = document.getElementById('emailNoticeText');
-  if (!aviso || !span) return;
-  span.textContent = texto;
-  aviso.style.display = 'flex';
-  aviso.style.borderLeft = `4px solid ${exito ? 'var(--secondary)' : 'var(--danger)'}`;
-}
-
-async function enviarCorreoAutomatico(record) {
-  if (typeof emailjs === 'undefined') {
-    console.warn('[EmailJS] SDK no disponible.');
-    return;
-  }
-  if (!emailJsConfigurado()) {
-    console.info('[EmailJS] No configurado — edita EMAILJS_CONFIG en script.js para activar el envío.');
-    return;
-  }
-
-  try {
-    await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-      nombre:    record.nombre,
-      resultado: record.carreraPrincipal,
-      top1:      record.top3?.[0]?.[0] || '',
-      top2:      record.top3?.[1]?.[0] || '',
-      top3:      record.top3?.[2]?.[0] || '',
-      to_email:  record.correo,
-    });
-    mostrarAvisoCorreo(`✅ Resultados enviados a ${record.correo}`, true);
-  } catch (error) {
-    console.error('[EmailJS] Error al enviar:', error);
-    mostrarAvisoCorreo('⚠️ No se pudo enviar el correo. Guarda una captura de tus resultados.', false);
-  }
-}
 
 // ─── GUARDADO DE REGISTRO ────────────────────────────────────────────────────
 function guardarRegistro(record) {
@@ -309,14 +266,13 @@ function guardarRegistro(record) {
 
   saveJSON(LAST_RESULT_KEY, {
     carreraPrincipal: record.carreraPrincipal,
-    correo:           record.correo,
     fechaISO:         record.fechaISO,
   });
 }
 
 // ─── INICIALIZACIÓN ──────────────────────────────────────────────────────────
 async function init() {
-  initEmailJS();
+
 
   // Cargar preguntas desde JSON
   try {
@@ -369,7 +325,7 @@ async function init() {
     const record = {
       nombre:           form.nombre.value.trim(),
       edad:             form.edad.value,
-      correo:           form.correo.value.trim(),
+
       respuestas,
       puntajes,
       top3,
@@ -387,7 +343,7 @@ async function init() {
     showScreen('result');
 
     // Envío de correo en segundo plano (no bloquea la pantalla de resultados)
-    enviarCorreoAutomatico(record);
+
   });
 }
 
